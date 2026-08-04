@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جست‌وجوی فهرست اقلام و تأمین‌کنندگان تأییدشده</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2b2d;
+    --paper:#f6f3ec;
+    --panel:#ffffff;
+    --line:#dcd6c6;
+    --accent:#2f6f5e;
+    --accent-deep:#1f4d40;
+    --amber:#c17f2b;
+    --muted:#6b6759;
+    --radius:10px;
+    font-family:'Vazirmatn',Tahoma,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);}
+  body{min-height:100vh;}
+
+  .topbar{
+    background:linear-gradient(180deg,var(--accent-deep),var(--accent));
+    color:#f3efe2;
+    padding:22px 28px 26px;
+    box-shadow:0 3px 0 rgba(0,0,0,.08);
+  }
+  .topbar-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+  .brand-eyebrow{font-size:12px;letter-spacing:.12em;color:#d7e7c9;font-weight:600;margin:0 0 4px;text-transform:uppercase;}
+  .brand-title{font-size:26px;font-weight:800;margin:0;}
+  .brand-sub{font-size:13.5px;color:#e7ecd6;margin-top:6px;opacity:.9;}
+  .stat-pill{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:999px;
+    padding:8px 18px;
+    font-size:13px;
+    display:flex;
+    gap:8px;
+    align-items:baseline;
+  }
+  .stat-pill b{font-size:19px;font-weight:800;}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:22px 28px 60px;}
+
+  .controls{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.03);
+  }
+  .search-row{display:flex;gap:10px;align-items:center;}
+  .search-row input[type=text]{
+    flex:1;
+    padding:12px 14px;
+    font-size:15px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    background:#fcfbf7;
+    color:var(--ink);
+    font-family:inherit;
+    transition:border-color .15s;
+  }
+  .search-row input[type=text]:focus{outline:none;border-color:var(--accent);}
+  .icon-btn{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:0 16px;
+    height:44px;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .icon-btn.ghost{background:transparent;color:var(--accent-deep);border:1.5px solid var(--line);}
+  .icon-btn:hover{filter:brightness(1.06);}
+  .icon-btn:active{transform:translateY(1px);}
+
+  .mode-row{display:flex;gap:8px;margin-top:14px;}
+  .mode-btn{
+    flex:1;
+    border:1.5px solid var(--line);
+    background:#fcfbf7;
+    color:var(--muted);
+    border-radius:8px;
+    padding:11px 12px;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .mode-btn .desc{font-weight:400;font-size:11.5px;opacity:.75;}
+  .mode-btn.active{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff;}
+  .mode-btn.active .desc{color:#dfe9d3;}
+
+  .adv-toggle{
+    margin-top:12px;
+    font-size:13px;
+    color:var(--accent-deep);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    user-select:none;
+    font-weight:600;
+  }
+  .adv-toggle .chev{transition:transform .15s;display:inline-block;}
+  .adv-toggle.open .chev{transform:rotate(90deg);}
+
+  .adv-panel{
+    display:none;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:10px;
+  }
+  .adv-panel.show{display:grid;}
+  .adv-field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+  .adv-field input{
+    width:100%;
+    padding:8px 10px;
+    border:1.5px solid var(--line);
+    border-radius:7px;
+    font-size:13px;
+    font-family:inherit;
+    background:#fcfbf7;
+  }
+  .adv-field input:focus{outline:none;border-color:var(--accent);}
+
+  .results-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:14px 2px 10px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .results-count{font-size:13.5px;color:var(--muted);}
+  .results-count b{color:var(--ink);font-size:15px;}
+  .page-size select{
+    padding:6px 10px;
+    border-radius:7px;
+    border:1.5px solid var(--line);
+    font-family:inherit;
+    background:#fff;
+    font-size:13px;
+  }
+
+  .table-shell{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.03);
+  }
+  .table-scroll{overflow-x:auto;}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px;}
+  thead th{
+    position:sticky;top:0;
+    background:#eef1e4;
+    color:var(--accent-deep);
+    text-align:right;
+    padding:11px 12px;
+    font-weight:700;
+    font-size:12.5px;
+    border-bottom:2px solid var(--line);
+    cursor:pointer;
+    white-space:nowrap;
+    user-select:none;
+  }
+  thead th:hover{background:#e4e9d6;}
+  thead th .sort-arrow{opacity:.4;font-size:11px;margin-inline-start:4px;}
+  thead th.sorted .sort-arrow{opacity:1;color:var(--amber);}
+  tbody td{
+    padding:10px 12px;
+    border-bottom:1px solid #efece1;
+    vertical-align:top;
+  }
+  tbody tr.data-row:hover{background:#f8f6ee;}
+  tbody tr.data-row:nth-child(4n+1){background:#fbfaf5;}
+  tbody tr.vgroup{cursor:pointer;}
+  tbody tr.vgroup:hover{background:#f0f4e8;}
+  tbody tr.vgroup.open{background:#eaf1e0;}
+  .col-id{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;}
+  .col-name{font-weight:600;}
+  .count-badge{
+    display:inline-block;
+    font-size:12px;
+    font-weight:800;
+    padding:3px 11px;
+    border-radius:999px;
+    background:var(--accent);
+    color:#fff;
+  }
+  .expand-icon{display:inline-block;transition:transform .15s;margin-inline-end:6px;color:var(--muted);}
+  tr.vgroup.open .expand-icon{transform:rotate(90deg);}
+  tr.category-row{background:#f4f0e2;}
+  tr.category-row:hover{background:#eee8d5;}
+  tr.category-row.open{background:#e9e2c9;}
+  tr.category-row .col-name{color:var(--accent-deep);}
+  .cat-sub-badge{
+    display:inline-block;
+    font-size:11px;
+    font-weight:600;
+    color:var(--muted);
+    background:#efe9d6;
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:1px 9px;
+    margin-inline-start:6px;
+  }
+  tr.sub-vendor-row .col-id.indent,
+  tr.sub-vendor-row .col-name.indent{
+    padding-right:34px;
+  }
+  tr.sub-vendor-row{background:#fcfbf6;}
+  tr.sub-vendor-row:hover{background:#f5f1e4;}
+  .count-badge.subtle{
+    background:#e4e9d6;
+    color:var(--accent-deep);
+  }
+  .item-detail-row td{padding:0;border-bottom:1px solid #efece1;}
+  .item-detail-wrap{padding:6px 20px 16px 20px;background:#fbfaf3;}
+  .item-detail-wrap table{min-width:0;font-size:12.5px;box-shadow:none;}
+  .item-detail-wrap thead th{background:#f2efe3;font-size:11px;padding:7px 10px;position:static;}
+  .item-detail-wrap tbody td{padding:6px 10px;}
+  mark{background:#fbe6a8;color:inherit;border-radius:3px;padding:0 1px;}
+
+  .empty-state{padding:60px 20px;text-align:center;color:var(--muted);}
+  .empty-state .big{font-size:38px;margin-bottom:10px;}
+  .empty-state h3{margin:0 0 6px;color:var(--ink);font-size:16px;}
+
+  .pagination{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:16px;border-top:1px solid var(--line);flex-wrap:wrap;
+  }
+  .pagination button{
+    border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:7px;padding:6px 12px;font-family:inherit;font-size:13px;cursor:pointer;
+  }
+  .pagination button:disabled{opacity:.35;cursor:default;}
+  .pagination button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .pagination .gap{color:var(--muted);padding:0 4px;}
+
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 0 4px;}
+
+  ::-webkit-scrollbar{height:10px;width:10px;}
+  ::-webkit-scrollbar-thumb{background:#d3cdb8;border-radius:6px;}
+
+  @media(max-width:640px){
+    .topbar-inner{flex-direction:column;align-items:flex-start;}
+    .brand-title{font-size:21px;}
+    .search-row{flex-wrap:wrap;}
+    .icon-btn{flex:1;}
+    .mode-row{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <p class="brand-eyebrow">سامانه جست‌وجو</p>
+      <h1 class="brand-title">فهرست اقلام و تأمین‌کنندگان تأییدشده</h1>
+      <p class="brand-sub">جست‌وجو بر اساس نام کالا، تأمین‌کننده یا شناسه</p>
+    </div>
+    <div class="stat-pill">تعداد کل رکوردها&nbsp;<b id="totalCount">—</b></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="loadingOverlay" style="text-align:center;padding:80px 20px;color:#6b6759;">
+    <div style="font-size:34px;margin-bottom:10px;">⏳</div>
+    <div style="font-weight:700;color:#1c2b2d;">در حال بارگذاری داده‌ها…</div>
+    <div style="font-size:12.5px;margin-top:6px;">فایل فشرده‌‌ی داده در حال دریافت و باز شدن است، چند لحظه صبر کنید.</div>
+  </div>
+  <div id="errorBanner" style="display:none;background:#f5e2dc;border:1px solid #e2b6a8;color:#8a3a24;padding:14px 16px;border-radius:10px;margin-bottom:16px;font-size:13.5px;"></div>
+  <div id="appBody" style="display:none;">
+  <div class="controls">
+    <div class="search-row">
+      <input type="text" id="globalSearch" placeholder="مثلاً: کاله — جست‌وجو در نام کالا، تأمین‌کننده و شناسه‌ها…" autocomplete="off">
+      <button class="icon-btn ghost" id="clearBtn">پاک کردن</button>
+      <button class="icon-btn" id="exportBtn">خروجی CSV</button>
+    </div>
+
+    <div class="mode-row">
+      <button class="mode-btn active" id="modeRows" data-mode="rows">
+        📋 نمایش کالاها &nbsp;<span class="desc">هر ردیف یک کالا</span>
+      </button>
+      <button class="mode-btn" id="modeVendors" data-mode="vendors">
+        🏷️ نمایش تأمین‌کنندگان یکتا &nbsp;<span class="desc">هر ردیف یک وندور با کد و تعداد کالا</span>
+      </button>
+    </div>
+
+    <div class="adv-toggle" id="advToggle"><span class="chev">◂</span> جست‌وجوی پیشرفته بر اساس ستون</div>
+    <div class="adv-panel" id="advPanel"></div>
+  </div>
+
+  <div class="results-bar">
+    <div class="results-count"><span id="resultLabel">نتایج</span>: <b id="resultCount">0</b></div>
+    <div class="page-size">
+      <label style="font-size:12.5px;color:var(--muted);margin-inline-end:6px;">ردیف در هر صفحه</label>
+      <select id="pageSizeSel">
+        <option value="25">۲۵</option>
+        <option value="50" selected>۵۰</option>
+        <option value="100">۱۰۰</option>
+        <option value="200">۲۰۰</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-shell">
+    <div class="table-scroll">
+      <table>
+        <thead><tr id="headRow"></tr></thead>
+        <tbody id="bodyRows"></tbody>
+      </table>
+    </div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <div class="big">🔍</div>
+      <h3>نتیجه‌ای یافت نشد</h3>
+      <div>عبارت جست‌وجو یا فیلترها را تغییر دهید.</div>
+    </div>
+    <div class="pagination" id="pager"></div>
+  </div>
+  </div>
+
+  <footer>ابزار جست‌وجوی محلی — تمام پردازش در همین صفحه و بدون ارسال داده انجام می‌شود.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DATA_URL = 'data.json.gz';
+
+  function showError(msg){
+    var ov = document.getElementById('loadingOverlay'); if(ov) ov.style.display='none';
+    var eb = document.getElementById('errorBanner');
+    eb.textContent = msg;
+    eb.style.display = 'block';
+  }
+
+  function loadData(){
+    if(typeof DecompressionStream === 'undefined'){
+      showError('مرورگر شما از باز کردن فایل فشرده پشتیبانی نمی‌کند. لطفاً از یک نسخهٔ به‌روز Chrome، Edge، یا Firefox استفاده کنید.');
+      return;
+    }
+    fetch(DATA_URL).then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      var ds = res.body.pipeThrough(new DecompressionStream('gzip'));
+      return new Response(ds).text();
+    }).then(function(text){
+      var compact = JSON.parse(text);
+      var vendors = compact.vendors; // [[vendorId, vendorName], ...]
+      var rows = compact.rows.map(function(r){
+        var v = vendors[r[2]];
+        return [r[0], r[1], v[0], v[1]];
+      });
+      var payload = { headers: ['Item Id','Item name','Vendor Id','Vendor name'], rows: rows };
+      document.getElementById('loadingOverlay').style.display = 'none';
+      document.getElementById('appBody').style.display = '';
+      boot(payload);
+    }).catch(function(err){
+      showError('بارگذاری داده‌ها ناموفق بود (' + err.message + '). اگر این فایل را به‌صورت محلی باز کرده‌اید، به‌جای دابل‌کلیک، آن را از طریق یک وب‌سرور محلی یا میزبانی مثل GitHub Pages باز کنید.');
+    });
+  }
+
+  function boot(payload){
+  var HEADERS = payload.headers; // Item Id, Item name, Vendor Id, Vendor name
+  var ROWS = payload.rows;
+  var N = ROWS.length;
+
+  var IDX = {};
+  HEADERS.forEach(function(h,i){ IDX[h] = i; });
+  var I_ITEMID = IDX['Item Id'];
+  var I_ITEMNAME = IDX['Item name'];
+  var I_VENDORID = IDX['Vendor Id'];
+  var I_VENDORNAME = IDX['Vendor name'];
+
+  var ROW_LABELS = ['شناسه کالا','نام کالا','کد تأمین‌کننده','نام تأمین‌کننده'];
+  var VENDOR_LABELS = ['کد تأمین‌کننده','نام تأمین‌کننده','تعداد کالای منطبق'];
+
+  document.getElementById('totalCount').textContent = N.toLocaleString('fa-IR');
+
+  // Normalize Arabic/Persian character variants so searches match regardless of
+  // which form was typed or stored: ي/ى -> ی , ك -> ک (a 1-to-1 character swap,
+  // so string length/position never changes — needed for highlighting).
+  function normalizeFa(s){
+    if(s === null || s === undefined) return '';
+    return String(s)
+      .replace(/[\u064A\u0649]/g, '\u06CC')   // ي or ى -> ی
+      .replace(/\u0643/g, '\u06A9');           // ك -> ک
+  }
+
+  var SEARCH_BLOB = new Array(N);
+  var NORM_ROWS = new Array(N);
+  for (var i=0;i<N;i++){
+    var normRow = ROWS[i].map(function(v){ return normalizeFa(v).toLowerCase(); });
+    NORM_ROWS[i] = normRow;
+    SEARCH_BLOB[i] = normRow.join(' \u241F ');
+  }
+
+  // Warehouse (انبار) vendors are branch networks — e.g. "انبار افق کوروش - خشک مشهد".
+  // These get clustered into one collapsible category further below (see
+  // baseVendorKey inside applyFilters). Other same-brand vendors are untouched.
+
+  // ---- advanced per-column filters (rows mode only) ----
+  var advPanel = document.getElementById('advPanel');
+  var colFilters = new Array(HEADERS.length).fill('');
+  HEADERS.forEach(function(h, i){
+    var field = document.createElement('div');
+    field.className = 'adv-field';
+    var label = document.createElement('label');
+    label.textContent = ROW_LABELS[i];
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'فیلتر ' + ROW_LABELS[i] + '…';
+    input.dataset.colIndex = i;
+    input.addEventListener('input', function(){
+      colFilters[i] = normalizeFa(this.value.trim()).toLowerCase();
+      state.page = 1;
+      applyFilters();
+    });
+    field.appendChild(label);
+    field.appendChild(input);
+    advPanel.appendChild(field);
+  });
+
+  document.getElementById('advToggle').addEventListener('click', function(){
+    this.classList.toggle('open');
+    advPanel.classList.toggle('show');
+  });
+
+  // ---- mode switching ----
+  var state = { indices: null, page: 1, pageSize: 50, mode:'rows', openVendor:null, openCategory:null, openVendorInCat:null };
+  var sortState = { col: -1, dir: 1 };
+
+  document.getElementById('modeRows').addEventListener('click', function(){ setMode('rows'); });
+  document.getElementById('modeVendors').addEventListener('click', function(){ setMode('vendors'); });
+
+  function setMode(mode){
+    state.mode = mode;
+    state.page = 1;
+    state.openVendor = null;
+    state.openCategory = null;
+    state.openVendorInCat = null;
+    sortState = { col:-1, dir:1 };
+    document.getElementById('modeRows').classList.toggle('active', mode==='rows');
+    document.getElementById('modeVendors').classList.toggle('active', mode==='vendors');
+    document.getElementById('advToggle').style.display = mode==='rows' ? '' : 'none';
+    if(mode!=='rows'){ advPanel.classList.remove('show'); document.getElementById('advToggle').classList.remove('open'); }
+    document.getElementById('resultLabel').textContent = mode==='rows' ? 'نتایج' : 'تعداد تأمین‌کنندگان یکتا';
+    buildHeadRow();
+    applyFilters();
+  }
+
+  function buildHeadRow(){
+    var headRow = document.getElementById('headRow');
+    headRow.innerHTML = '';
+    var labels = state.mode==='rows' ? ROW_LABELS : VENDOR_LABELS;
+    labels.forEach(function(lab, i){
+      var th = document.createElement('th');
+      th.innerHTML = lab + ' <span class="sort-arrow">▲▼</span>';
+      th.addEventListener('click', function(){
+        if(sortState.col === i){ sortState.dir *= -1; } else { sortState.col = i; sortState.dir = 1; }
+        Array.prototype.forEach.call(headRow.children, function(el){ el.classList.remove('sorted'); });
+        th.classList.add('sorted');
+        th.querySelector('.sort-arrow').textContent = sortState.dir === 1 ? '▲' : '▼';
+        applyFilters();
+      });
+      headRow.appendChild(th);
+    });
+  }
+
+  var globalSearchEl = document.getElementById('globalSearch');
+  var debounceTimer = null;
+  globalSearchEl.addEventListener('input', function(){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function(){ state.page = 1; applyFilters(); }, 120);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    globalSearchEl.value = '';
+    colFilters.fill('');
+    Array.prototype.forEach.call(advPanel.querySelectorAll('input'), function(inp){ inp.value=''; });
+    state.page = 1;
+    applyFilters();
+  });
+
+  document.getElementById('pageSizeSel').addEventListener('change', function(){
+    state.pageSize = parseInt(this.value,10);
+    state.page = 1;
+    render();
+  });
+
+  function searchTokens(raw){
+    return normalizeFa(raw.trim()).toLowerCase().split(/\s+/).filter(Boolean);
+  }
+
+  function matchesBaseFilters(i){
+    var tokens = searchTokens(globalSearchEl.value);
+    if(tokens.length){
+      var blob = SEARCH_BLOB[i];
+      for (var t=0;t<tokens.length;t++){
+        if(blob.indexOf(tokens[t]) === -1) return false;
+      }
+    }
+    if(state.mode === 'rows'){
+      var hasAdv = colFilters.some(function(v){ return v; });
+      if(hasAdv){
+        var normRow = NORM_ROWS[i];
+        for (var c=0;c<colFilters.length;c++){
+          if(colFilters[c] && normRow[c].indexOf(colFilters[c]) === -1) return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function applyFilters(){
+    var matched = [];
+    for (var i=0;i<N;i++){ if(matchesBaseFilters(i)) matched.push(i); }
+
+    if(state.mode === 'rows'){
+      if(sortState.col >= 0){
+        var c = sortState.col, dir = sortState.dir;
+        matched.sort(function(a,b){
+          var va = ROWS[a][c], vb = ROWS[b][c];
+          if(va < vb) return -1*dir;
+          if(va > vb) return 1*dir;
+          return 0;
+        });
+      }
+      state.indices = matched;
+    } else {
+      // group by vendor id
+      var groups = {};
+      var order = [];
+      matched.forEach(function(i){
+        var vid = ROWS[i][I_VENDORID];
+        if(!groups[vid]){ groups[vid] = { vendorId: vid, vendorName: ROWS[i][I_VENDORNAME], items: [] }; order.push(vid); }
+        groups[vid].items.push(i);
+      });
+      var list = order.map(function(vid){ return groups[vid]; });
+
+      // Cluster warehouse-style vendors ("انبار ...") that share a common
+      // prefix before a dash into one collapsible category. All other
+      // vendors stay as regular standalone rows.
+      function baseVendorKey(vendorId, name){
+        var trimmed = (name || '').trim();
+        if(trimmed.indexOf('انبار') === 0){
+          var parts = trimmed.split(/\s*[-\u2013\u2014]\s*/);
+          if(parts.length > 1 && parts[0].trim()){
+            return 'WH::' + parts[0].trim();
+          }
+        }
+        return 'V::' + vendorId;
+      }
+
+      var catMap = {}, catOrder = [], entries = [];
+      list.forEach(function(vg){
+        var key = baseVendorKey(vg.vendorId, vg.vendorName);
+        if(key.indexOf('WH::') === 0){
+          if(!catMap[key]){ catMap[key] = {type:'category', key:key, label:key.slice(4), vendors:[], totalItems:0}; catOrder.push(key); }
+          catMap[key].vendors.push(vg);
+          catMap[key].totalItems += vg.items.length;
+        } else {
+          entries.push({type:'vendor', vendorId:vg.vendorId, vendorName:vg.vendorName, items:vg.items});
+        }
+      });
+      catOrder.forEach(function(key){
+        var cat = catMap[key];
+        if(cat.vendors.length > 1){
+          cat.vendors.sort(function(a,b){ return a.vendorName < b.vendorName ? -1 : (a.vendorName > b.vendorName ? 1 : 0); });
+          entries.push(cat);
+        } else {
+          var vg = cat.vendors[0];
+          entries.push({type:'vendor', vendorId:vg.vendorId, vendorName:vg.vendorName, items:vg.items});
+        }
+      });
+
+      function entrySortId(e){ return e.type==='category' ? e.label : e.vendorId; }
+      function entrySortName(e){ return e.type==='category' ? e.label : e.vendorName; }
+      function entryCount(e){ return e.type==='category' ? e.totalItems : e.items.length; }
+
+      if(sortState.col === 0){
+        entries.sort(function(a,b){ var va=entrySortId(a), vb=entrySortId(b); return (va<vb?-1:va>vb?1:0)*sortState.dir; });
+      } else if(sortState.col === 1){
+        entries.sort(function(a,b){ var va=entrySortName(a), vb=entrySortName(b); return (va<vb?-1:va>vb?1:0)*sortState.dir; });
+      } else if(sortState.col === 2){
+        entries.sort(function(a,b){ return (entryCount(a)-entryCount(b))*sortState.dir; });
+      } else {
+        entries.sort(function(a,b){ return entryCount(b)-entryCount(a); });
+      }
+      state.indices = entries;
+    }
+    render();
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function highlight(text, q){
+    var original = String(text === null || text === undefined ? '' : text);
+    var tokens = searchTokens(q || '');
+    if(!tokens.length) return escapeHtml(original);
+    var normText = normalizeFa(original).toLowerCase();
+    var ranges = [];
+    tokens.forEach(function(tok){
+      var idx = normText.indexOf(tok);
+      if(idx !== -1) ranges.push([idx, idx + tok.length]);
+    });
+    if(!ranges.length) return escapeHtml(original);
+    ranges.sort(function(a,b){ return a[0]-b[0]; });
+    var merged = [ranges[0]];
+    for (var r=1;r<ranges.length;r++){
+      var last = merged[merged.length-1];
+      if(ranges[r][0] <= last[1]) last[1] = Math.max(last[1], ranges[r][1]);
+      else merged.push(ranges[r]);
+    }
+    // normalizeFa/toLowerCase are 1-to-1 character swaps, so indices line up
+    // with the original string and we can highlight the original characters.
+    var out = '', pos = 0;
+    merged.forEach(function(rg){
+      out += escapeHtml(original.slice(pos, rg[0]));
+      out += '<mark>' + escapeHtml(original.slice(rg[0], rg[1])) + '</mark>';
+      pos = rg[1];
+    });
+    out += escapeHtml(original.slice(pos));
+    return out;
+  }
+
+  function render(){
+    var idxs = state.indices || [];
+    var total = idxs.length;
+    document.getElementById('resultCount').textContent = total.toLocaleString('fa-IR');
+
+    var pageSize = state.pageSize;
+    var totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if(state.page > totalPages) state.page = totalPages;
+    var start = (state.page - 1) * pageSize;
+    var pageItems = idxs.slice(start, start + pageSize);
+
+    var body = document.getElementById('bodyRows');
+    var empty = document.getElementById('emptyState');
+    var q = globalSearchEl.value.trim();
+
+    if(total === 0){
+      body.innerHTML = '';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      if(state.mode === 'rows'){
+        body.innerHTML = renderRowsHtml(pageItems, q);
+      } else {
+        body.innerHTML = renderVendorsHtml(pageItems, q);
+        attachVendorHandlers();
+      }
+    }
+    renderPager(totalPages);
+  }
+
+  function renderRowsHtml(pageIdxs, q){
+    var html = '';
+    for (var k=0;k<pageIdxs.length;k++){
+      var row = ROWS[pageIdxs[k]];
+      html += '<tr class="data-row">';
+      for (var c=0;c<row.length;c++){
+        var cellClass = c===0 ? 'col-id' : (c===1||c===3 ? 'col-name' : '');
+        var val = row[c] === '' || row[c]===null ? '—' : row[c];
+        html += '<td class="'+cellClass+'">' + highlight(val, q) + '</td>';
+      }
+      html += '</tr>';
+    }
+    return html;
+  }
+
+  function itemDetailRowsHtml(items, q, colspan){
+    var html = '<tr class="item-detail-row"><td colspan="'+colspan+'"><div class="item-detail-wrap">';
+    html += '<table><thead><tr><th>شناسه کالا</th><th>نام کالا</th></tr></thead><tbody>';
+    items.forEach(function(i){
+      var row = ROWS[i];
+      html += '<tr><td class="col-id">'+escapeHtml(row[I_ITEMID])+'</td><td>'+highlight(row[I_ITEMNAME],q)+'</td></tr>';
+    });
+    html += '</tbody></table></div></td></tr>';
+    return html;
+  }
+
+  function renderVendorsHtml(pageEntries, q){
+    var html = '';
+    pageEntries.forEach(function(e){
+      if(e.type === 'category'){
+        var catOpen = state.openCategory === e.key;
+        html += '<tr class="vgroup category-row '+(catOpen?'open':'')+'" data-cat="'+escapeHtml(e.key)+'">';
+        html += '<td class="col-id"><span class="expand-icon">▸</span>📁 دسته</td>';
+        html += '<td class="col-name">' + highlight(e.label, q) + ' <span class="cat-sub-badge">' + e.vendors.length.toLocaleString('fa-IR') + ' شعبه</span></td>';
+        html += '<td><span class="count-badge">' + e.totalItems.toLocaleString('fa-IR') + ' کالا</span></td>';
+        html += '</tr>';
+        if(catOpen){
+          e.vendors.forEach(function(vg){
+            var vOpen = state.openVendorInCat === vg.vendorId;
+            html += '<tr class="vgroup sub-vendor-row '+(vOpen?'open':'')+'" data-subvid="'+escapeHtml(vg.vendorId)+'">';
+            html += '<td class="col-id indent"><span class="expand-icon">▸</span>' + highlight(vg.vendorId, q) + '</td>';
+            html += '<td class="col-name indent">' + highlight(vg.vendorName, q) + '</td>';
+            html += '<td><span class="count-badge subtle">' + vg.items.length.toLocaleString('fa-IR') + ' کالا</span></td>';
+            html += '</tr>';
+            if(vOpen){ html += itemDetailRowsHtml(vg.items, q, 3); }
+          });
+        }
+      } else {
+        var isOpen = state.openVendor === e.vendorId;
+        html += '<tr class="vgroup '+(isOpen?'open':'')+'" data-vid="'+escapeHtml(e.vendorId)+'">';
+        html += '<td class="col-id"><span class="expand-icon">▸</span>' + highlight(e.vendorId, q) + '</td>';
+        html += '<td class="col-name">' + highlight(e.vendorName, q) + '</td>';
+        html += '<td><span class="count-badge">' + e.items.length.toLocaleString('fa-IR') + ' کالا</span></td>';
+        html += '</tr>';
+        if(isOpen){ html += itemDetailRowsHtml(e.items, q, 3); }
+      }
+    });
+    return html;
+  }
+
+  function attachVendorHandlers(){
+    Array.prototype.forEach.call(document.querySelectorAll('tr.category-row'), function(tr){
+      tr.addEventListener('click', function(){
+        var key = this.dataset.cat;
+        state.openCategory = (state.openCategory === key) ? null : key;
+        state.openVendorInCat = null;
+        render();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('tr.sub-vendor-row'), function(tr){
+      tr.addEventListener('click', function(evt){
+        evt.stopPropagation();
+        var vid = this.dataset.subvid;
+        state.openVendorInCat = (state.openVendorInCat === vid) ? null : vid;
+        render();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('tr.vgroup[data-vid]'), function(tr){
+      tr.addEventListener('click', function(){
+        var vid = this.dataset.vid;
+        state.openVendor = (state.openVendor === vid) ? null : vid;
+        render();
+      });
+    });
+  }
+
+  function renderPager(totalPages){
+    var pager = document.getElementById('pager');
+    if(totalPages <= 1){ pager.innerHTML=''; return; }
+    var p = state.page;
+    var html = '';
+    html += '<button '+(p===1?'disabled':'')+' data-p="1">« ابتدا</button>';
+    html += '<button '+(p===1?'disabled':'')+' data-p="'+(p-1)+'">‹ قبلی</button>';
+
+    var pages = [];
+    var span = 2;
+    for (var i=Math.max(1,p-span); i<=Math.min(totalPages,p+span); i++) pages.push(i);
+    if(pages[0] > 1) { html += '<button data-p="1">۱</button>'; if(pages[0]>2) html += '<span class="gap">…</span>'; }
+    pages.forEach(function(pg){
+      html += '<button class="'+(pg===p?'active':'')+'" data-p="'+pg+'">'+pg.toLocaleString('fa-IR')+'</button>';
+    });
+    if(pages[pages.length-1] < totalPages){ if(pages[pages.length-1] < totalPages-1) html += '<span class="gap">…</span>'; html += '<button data-p="'+totalPages+'">'+totalPages.toLocaleString('fa-IR')+'</button>'; }
+
+    html += '<button '+(p===totalPages?'disabled':'')+' data-p="'+(p+1)+'">بعدی ›</button>';
+    html += '<button '+(p===totalPages?'disabled':'')+' data-p="'+totalPages+'">انتها »</button>';
+    pager.innerHTML = html;
+
+    Array.prototype.forEach.call(pager.querySelectorAll('button[data-p]'), function(btn){
+      btn.addEventListener('click', function(){
+        state.page = parseInt(this.dataset.p,10);
+        render();
+        document.querySelector('.table-shell').scrollIntoView({behavior:'smooth', block:'nearest'});
+      });
+    });
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', function(){
+    var idxs = state.indices || [];
+    if(idxs.length === 0){ alert('نتیجه‌ای برای خروجی گرفتن وجود ندارد.'); return; }
+    var lines, filename;
+    if(state.mode === 'rows'){
+      if(idxs.length > 50000 && !confirm('تعداد نتایج ('+idxs.length.toLocaleString('fa-IR')+') زیاد است. ادامه می‌دهید؟')) return;
+      lines = [ROW_LABELS.join(',')];
+      idxs.forEach(function(i){
+        var row = ROWS[i].map(function(v){
+          var s = String(v===null||v===undefined?'':v);
+          if(/[",\n]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+          return s;
+        });
+        lines.push(row.join(','));
+      });
+      filename = 'vendor_search_results.csv';
+    } else {
+      lines = ['دسته,کد تأمین‌کننده,نام تأمین‌کننده,تعداد کالای منطبق'];
+      idxs.forEach(function(e){
+        var vendors = e.type === 'category' ? e.vendors : [e];
+        var catLabel = e.type === 'category' ? e.label : '';
+        vendors.forEach(function(g){
+          var name = g.vendorName;
+          if(/[",\n]/.test(name)) name = '"' + name.replace(/"/g,'""') + '"';
+          var cat = catLabel;
+          if(/[",\n]/.test(cat)) cat = '"' + cat.replace(/"/g,'""') + '"';
+          lines.push(cat + ',' + g.vendorId + ',' + name + ',' + g.items.length);
+        });
+      });
+      filename = 'vendor_summary.csv';
+    }
+    var blob = new Blob(['\uFEFF' + lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // initial
+  buildHeadRow();
+  state.indices = ROWS.map(function(_,i){ return i; });
+  render();
+  }
+
+  loadData();
+})();
+</script>
+</body>
+</html>
